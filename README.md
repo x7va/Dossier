@@ -1,90 +1,74 @@
 # Dossier
 
-Dossier is a passive OSINT reconnaissance toolkit for checking usernames, emails, and public footprint signals across common web surfaces.
+Small OSINT utility for checking usernames, email addresses, and the usual public web footprint.
 
-It is designed for safe, read-only investigation and awareness workflows. The tool does not require login credentials, uses public URL patterns, and avoids intrusive scraping or credential theft.
+It hits public URLs, records what comes back, and puts the results in a local report. No accounts, no magic, no private-data nonsense.
 
-## What it does
-
-- Async username lookup across a curated set of public profile URLs
-- Email footprint checks via public search and breach lookup URLs
-- JSON export and local history logging
-- Interactive terminal dashboard styled like a tactical reconnaissance console
-- Safe HTTP probing with timeout, retry, and graceful handling of 403/404/429 responses
-
-## Installation
+## Install
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install --upgrade pip
 pip install -e .
 ```
 
-## Usage
+## Use it
 
-Username scan:
+Check a username:
 
 ```bash
 dossier scan username alice
 ```
 
-Email scan:
+Check an email:
 
 ```bash
 dossier scan email alice@example.com
 ```
 
-JSON output:
+Get JSON instead of terminal output:
 
 ```bash
 dossier scan username alice --json
 ```
 
-Interactive tactical console:
-
-```bash
-dossier ui
-```
-
-Web analyst dashboard:
+Run the local dashboard:
 
 ```bash
 dossier web
 ```
 
-Open `http://127.0.0.1:8765` in your browser. The dashboard supports:
+Then open [http://127.0.0.1:8765](http://127.0.0.1:8765).
 
-- Email and username investigations
-- Email risk, domain, deliverability, and provider signals
-- Digital footprint category counts
-- Registered public account results
-- Investigation metadata and local history
-- Configured provider inspection
-
-Read scan history:
-
-```bash
-dossier history
-```
-
-## Example workflow
+There is also a terminal menu if that is more your thing:
 
 ```bash
 dossier ui
 ```
 
-Then choose:
-- Investigate a target
-- Review history
-- Providers
-- Diagnostics
+History lives here:
 
-## Notes
+```bash
+dossier history
+```
 
-- Dossier performs passive checks only.
-- It does not brute-force accounts, bypass authentication, or access private data.
-- Respect platform rate limits, robots.txt, and local law.
+## What it checks
+
+- Public profile URLs for common services
+- Email and domain basics
+- DNS and website reachability
+- Public account matches
+- A local record of each investigation
+
+The dashboard also shows the results as a report instead of dumping a wall of URLs at you.
+
+## A few obvious caveats
+
+This is passive collection. It does not log in, brute-force anything, poke password-reset flows, or get around access controls.
+
+A page returning `200` is not proof that a person owns an account. Treat results as leads, check the source, and use your judgement.
+
+Be polite with providers, respect their terms and rate limits, and do not use this for stalking or harassment.
 
 ## License
 
