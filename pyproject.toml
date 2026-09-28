@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dossier"
+version = "0.1.0"
+description = "Passive OSINT reconnaissance and analyst dashboard for usernames and email footprints"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+  { name = "Dossier" }
+]
+license = { text = "MIT" }
+
+[project.scripts]
+dossier = "dossier.cli:main"
+
+[tool.setuptools]
+packages = ["dossier"]

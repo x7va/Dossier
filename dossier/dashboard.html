@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dossier // OSINT Investigation Console</title>
+  <style>
+    :root { --bg:#0b0c0d; --panel:#131516; --panel2:#181a1b; --line:#2a2e30; --text:#e8eaed; --muted:#828990; --blue:#5b91ff; --green:#3fe18c; --amber:#e8b94f; --red:#f06c77; }
+    * { box-sizing:border-box; } body { margin:0; background:var(--bg); color:var(--text); font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif; letter-spacing:.01em; }
+    header { height:72px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; padding:0 30px; background:#0e1011; }
+    .brand { font-weight:800; letter-spacing:.16em; font-size:15px; } .brand span { color:var(--blue); } .topmeta { color:var(--muted); font-size:12px; }
+    main { max-width:1480px; margin:0 auto; padding:32px 28px 80px; } .hero { display:flex; justify-content:space-between; align-items:end; gap:24px; margin-bottom:24px; }
+    h1 { font-size:28px; margin:0 0 8px; } .sub { color:var(--muted); font-size:13px; } .search { display:flex; gap:10px; min-width:580px; }
+    input, select, button { border:1px solid var(--line); background:var(--panel2); color:var(--text); border-radius:8px; height:42px; padding:0 13px; font-size:13px; }
+    input { flex:1; } button { cursor:pointer; font-weight:700; } button.primary { background:#285ab8; border-color:#3d73dc; } button:hover { filter:brightness(1.15); }
+    .tabs { display:flex; gap:7px; margin-bottom:24px; } .tabs button { height:34px; font-size:12px; background:#121516; } .tabs button.active { color:#fff; border-color:#4f7fdb; background:#192540; }
+    .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; } .card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:19px; }
+    .label { color:var(--muted); text-transform:uppercase; font-size:10px; letter-spacing:.13em; font-weight:800; margin-bottom:11px; } .value { font-size:19px; font-weight:750; } .value.small { font-size:14px; }
+    .profile { display:flex; align-items:center; gap:16px; padding:23px 25px; margin-bottom:16px; } .avatar { width:54px; height:54px; border-radius:50%; display:grid; place-items:center; background:linear-gradient(135deg,#5e87e9,#243764); font-weight:900; font-size:20px; }
+    .profile h2 { margin:0 0 8px; font-size:22px; } .pill { display:inline-flex; border-radius:99px; padding:5px 10px; font-size:10px; font-weight:800; letter-spacing:.12em; background:#182b50; color:#77a8ff; }
+    .section-title { font-size:16px; margin:22px 0 12px; } .risk { display:flex; align-items:center; gap:20px; background:#10241c; border-color:#265b47; } .risk .score { font-size:42px; color:var(--green); font-weight:800; } .green { color:var(--green); } .amber { color:var(--amber); } .red { color:var(--red); }
+    .details { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; } .detail { background:var(--panel2); border:1px solid #25292b; border-radius:9px; padding:15px; } .detail .value { font-size:14px; }
+    .wide { grid-column:span 2; } .bars .barrow { display:grid; grid-template-columns:190px 1fr 50px; gap:14px; align-items:center; margin:15px 0; font-size:13px; } .track { height:5px; background:#272a2c; border-radius:99px; overflow:hidden; } .fill { height:100%; background:var(--blue); border-radius:99px; }
+    table { width:100%; border-collapse:collapse; font-size:13px; } th,td { padding:14px 10px; text-align:left; border-bottom:1px solid #25292b; } th { color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:.12em; } .status { color:var(--green); font-weight:800; }
+    .empty { color:var(--muted); padding:18px 0; font-size:13px; } .hidden { display:none; } @media(max-width:900px) { .hero{display:block}.search{min-width:0;margin-top:18px}.grid,.details{grid-template-columns:repeat(2,1fr)}.wide{grid-column:span 2}.bars .barrow{grid-template-columns:120px 1fr 40px} header{padding:0 16px} main{padding:22px 16px} }
+  </style>
+</head>
+<body>
+  <header><div class="brand"><span>DOSSIER</span> // OSINT CONSOLE</div><div class="topmeta">PASSIVE MODE · LOCAL CASE STORE</div></header>
+  <main>
+    <section class="hero"><div><h1>Investigation workspace</h1><div class="sub">Search public footprint signals and preserve a local investigation manifest.</div></div><div class="search"><select id="type"><option value="email">Email</option><option value="username">Username</option></select><input id="target" placeholder="name@example.com or username"><button class="primary" onclick="investigate()">Investigate</button></div></section>
+    <div class="tabs"><button class="active" onclick="showTab('results',this)">Results</button><button onclick="showTab('history',this)">History</button><button onclick="showTab('providers',this)">Providers</button></div>
+    <section id="results">
+      <div id="empty" class="card empty">Enter a target and run an investigation. Results will appear here.</div>
+      <div id="report" class="hidden">
+        <div class="card profile"><div class="avatar" id="avatar">?</div><div><h2 id="targetTitle"></h2><span class="pill" id="targetPill"></span></div></div>
+        <div class="grid"><div class="card"><div class="label">Target</div><div class="value small" id="mTarget"></div></div><div class="card"><div class="label">Type</div><div class="value small" id="mType"></div></div><div class="card"><div class="label">Duration</div><div class="value small" id="mDuration"></div></div><div class="card"><div class="label">Providers</div><div class="value" id="mProviders"></div></div><div class="card"><div class="label">Matches</div><div class="value green" id="mMatches"></div></div><div class="card"><div class="label">Modules</div><div class="value" id="mModules"></div></div><div class="card"><div class="label">Entities</div><div class="value" id="mEntities"></div></div><div class="card"><div class="label">Manifest</div><div class="value small" id="mManifest"></div></div></div>
+        <div id="emailPanel" class="hidden"><div class="section-title">SEON-style email analysis</div><div class="card risk"><div class="score" id="riskScore"></div><div><div class="label">Risk score</div><div id="riskLabel"></div></div></div><div class="section-title">Email details</div><div class="details" id="emailDetails"></div><div class="section-title">Domain details <span class="sub" id="domainName"></span></div><div class="details" id="domainDetails"></div></div>
+        <div class="section-title">Digital footprint</div><div class="card bars" id="categories"></div>
+        <div class="section-title">Registered accounts</div><div class="card"><table><thead><tr><th>Provider</th><th>URL</th><th>Status</th></tr></thead><tbody id="accounts"></tbody></table></div>
+        <div class="section-title">Investigation record</div><div class="card"><div class="details" id="record"></div></div>
+      </div>
+    </section>
+    <section id="history" class="hidden"><div class="card"><div class="section-title">Saved investigations</div><div id="historyList" class="empty">Loading...</div></div></section>
+    <section id="providers" class="hidden"><div class="card"><div class="section-title">Configured passive providers</div><div id="providerList" class="empty">Loading...</div></div></section>
+  </main>
+<script>
+  const $ = id => document.getElementById(id);
+  function showTab(name, btn){['results','history','providers'].forEach(x=>$(x).classList.toggle('hidden',x!==name));document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');if(name==='history')loadHistory();if(name==='providers')loadProviders();}
+  function detail(label,value,cls=''){return `<div class="detail"><div class="label">${label}</div><div class="value ${cls}">${value}</div></div>`}
+  async function investigate(){const target=$('target').value.trim(),type=$('type').value;if(!target)return; $('empty').classList.add('hidden');$('report').classList.add('hidden');$('targetTitle').textContent=target; try{const r=await fetch(`/api/investigate?target=${encodeURIComponent(target)}&type=${type}`);const d=await r.json();if(d.error)throw Error(d.error);render(d);}catch(e){$('empty').textContent=e.message;$('empty').classList.remove('hidden');}}
+  function render(d){$('report').classList.remove('hidden');$('avatar').textContent=d.target[0].toUpperCase();$('targetTitle').textContent=d.target;$('targetPill').textContent=d.target_type.toUpperCase()+' TARGET';$('mTarget').textContent=d.target;$('mType').textContent=d.target_type;$('mDuration').textContent=d.duration;$('mProviders').textContent=d.providers;$('mMatches').textContent=d.matches;$('mModules').textContent=d.modules;$('mEntities').textContent=d.entities;$('mManifest').textContent=d.manifest;
+    if(d.analysis){$('emailPanel').classList.remove('hidden');const a=d.analysis;$('riskScore').textContent=a.risk_score;$('riskLabel').textContent=a.risk_label;$('domainName').textContent='('+a.domain+')';$('emailDetails').innerHTML=detail('Deliverable',a.deliverable?'Yes':'No',a.deliverable?'green':'red')+detail('Valid format',a.valid_format?'Yes':'No',a.valid_format?'green':'red')+detail('Full inbox',a.full_inbox===null?'Unknown':'Yes')+detail('Randomness',a.randomness);$('domainDetails').innerHTML=detail('Registered',a.registered?'Yes':'No',a.registered?'green':'red')+detail('Disposable',a.disposable?'Yes':'No',a.disposable?'red':'green')+detail('Free provider',a.free_provider?'Yes':'No')+detail('Custom domain',a.custom_domain?'Yes':'No')+detail('Valid MX',a.valid_mx?'Yes':'No',a.valid_mx?'green':'red')+detail('Suspicious TLD',a.suspicious_tld?'Yes':'No',a.suspicious_tld?'red':'green')+detail('Website exists',a.website_exists?'Yes':'No')+detail('DMARC',a.dmarc)+detail('SPF',a.spf);}else $('emailPanel').classList.add('hidden');
+    $('categories').innerHTML=Object.entries(d.categories).map(([k,v])=>`<div class="barrow"><div>${k}</div><div class="track"><div class="fill" style="width:${v[1]?Math.min(100,v[0]/v[1]*100):0}%"></div></div><div>${v[0]}/${v[1]}</div></div>`).join('');$('accounts').innerHTML=d.results.filter(x=>x.status==='exists').map(x=>`<tr><td>${x.provider}</td><td>${x.url}</td><td class="status">Registered</td></tr>`).join('')||'<tr><td colspan="3" class="empty">No confirmed public accounts.</td></tr>';$('record').innerHTML=detail('Investigation ID',d.id)+detail('Started',d.started)+detail('Completed',d.completed)+detail('Profile',d.profile)+detail('Findings',d.findings)+detail('Relationships',d.relationships);}
+  async function loadHistory(){const d=await (await fetch('/api/history')).json();$('historyList').innerHTML=d.slice().reverse().map(x=>`<div style="padding:14px 0;border-bottom:1px solid #25292b"><b>${x.target}</b><span class="sub"> · ${x.target_type} · ${x.completed}</span><div class="sub">${x.matches} matches · ${x.findings} findings · manifest ${x.manifest}</div></div>`).join('')||'No saved investigations.'}
+  async function loadProviders(){const d=await (await fetch('/api/providers')).json();$('providerList').innerHTML=d.map(x=>`<div style="padding:12px 0;border-bottom:1px solid #25292b"><b>${x.name}</b><span class="sub"> · ${x.description}</span></div>`).join('')}
+</script>
+</body>
+</html>
