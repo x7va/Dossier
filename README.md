@@ -2,7 +2,7 @@
 
 Small OSINT utility for checking usernames, email addresses, and the usual public web footprint.
 
-It hits public URLs, records what comes back, and puts the results in a local report. No accounts, no magic, no private-data nonsense.
+It hits public URLs, records what comes back, and puts the results in a local report.
 
 ## Install
 
@@ -40,7 +40,7 @@ dossier web
 
 Then open [http://127.0.0.1:8765](http://127.0.0.1:8765).
 
-There is also a terminal menu if that is more your thing:
+There is also a terminal menu:
 
 ```bash
 dossier ui
@@ -60,15 +60,10 @@ dossier history
 - Public account matches
 - A local record of each investigation
 
-The dashboard also shows the results as a report instead of dumping a wall of URLs at you.
 
-## A few obvious caveats
+A page returning `200` is not proof that a person owns an account. Treat results as leads, check the source.
 
-This is passive collection. It does not log in, brute-force anything, poke password-reset flows, or get around access controls.
-
-A page returning `200` is not proof that a person owns an account. Treat results as leads, check the source, and use your judgement.
-
-Be polite with providers, respect their terms and rate limits, and do not use this for stalking or harassment.
+Respect terms and rate limits.
 
 ## License
 
